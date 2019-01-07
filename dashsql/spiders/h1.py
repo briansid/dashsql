@@ -17,10 +17,12 @@ class H1Spider(scrapy.Spider):
         session = self.Session()
         query = session.query(Domain)
         for q in query:
-            yield scrapy.Request(q.name)
+            yield scrapy.Request(q.name, meta={'domain_id': q.domain_id})
 
     def parse(self, response):
         i = DashsqlItem()
         i['title'] = response.css('title::text').get()
         i['status'] = response.status
+        i['response_len'] = len(response.text)
+        i['domain_id'] = response.meta['domain_id']
         yield i

@@ -11,4 +11,6 @@ import scrapy
 class DashsqlItem(scrapy.Item):
     title = scrapy.Field()
     status = scrapy.Field()
+    response_len = scrapy.Field()
+    domain_id = scrapy.Field()
     pass
