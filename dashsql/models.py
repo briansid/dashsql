@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import os
 from sqlalchemy.pool import SingletonThreadPool
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -33,3 +34,4 @@ class Title(Base):
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
 
+    domain = relationship(Domain, back_populates="titles")
