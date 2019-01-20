@@ -1,7 +1,7 @@
-import sys
+import sys, csv
 import getopt
 from sqlalchemy.orm import sessionmaker
-from models import Title, db_connect, create_table, Domain
+from models import Title, db_connect, create_table, Domain, Subdomain
 from sqlalchemy.orm.exc import NoResultFound
 
 usage = """usage: domain.py [-h] [-a domain] [-r domain_id] [-b domains.txt] [-l]
@@ -9,6 +9,7 @@ usage = """usage: domain.py [-h] [-a domain] [-r domain_id] [-b domains.txt] [-l
 optional arguments:
   -h, --help Show this help message and exit
   -a, --add Add domain to parser
+  -l, --level Dommain Level
   -r, --remove Remove domain from parsers
   -b, --bulk Bulk add domains to parser
   -l, --list List all domains"""
@@ -54,30 +55,42 @@ for opt, arg in opts:
         print('%s removed.' % query.name)
         session.delete(query)
         session.commit()
-        
-    elif opt in ['-b', '--bulk']:
-        with open('urllist.txt') as f: 
-            urls = f.readlines()
-        urls = [url.strip() for url in urls]
-        kv = {}
-        for n, url in enumerate(urls):
-            if not url.startswith('http'):
-                url = 'http://' + url
-            kv['url'+str(n)] = url
-        print(kv)
-        for k, v in kv.items():
-            k = Domain(name=v)
-            print(k.name)
-            session.add(k)
-        session.flush()
-        session.commit()
 
-        print('\n'.join(urls))
+    elif opt in ['-b', '--bulk']:
+        with open(arg) as f:
+            reader = csv.DictReader(f)
+            for line in reader:
+                if line['subdomain_name']:
+                    domain_id = session.query(Domain.domain_id).filter_by(domain_name=line['domain_name']).scalar()
+                    del line['domain_name']
+                    line['domain_id'] = domain_id
+                    sd = Subdomain(**line)
+                    session.add(sd)
+                    session.commit()
+                else:
+                    del line['subdomain_name']
+                    d = Domain(**line)
+                    session.add(d)
+                    session.commit()
+        # with open(arg) as f:
+        #     urls = f.readlines()
+        # urls = [url.strip() for url in urls]
+        # kv = {}
+        # for n, url in enumerate(urls):
+        #     if not url.startswith('http'):
+        #         url = 'http://' + url
+        #     kv['url'+str(n)] = url
+        # for k, v in kv.items():
+        #     k = Domain(name=v)
+        #     session.add(k)
+        # session.flush()
+        # session.commit()
+
         print('Added successfully.')
 
     elif opt in ['-l', '--list']:
         for d in session.query(Domain):
-            print('{:3} - {}'.format(d.domain_id, d.name))
+            print('{:3} - {}'.format(d.domain_id, d.domain_name))
     elif opt in ['-h', '--help']:
         print(usage)
 
