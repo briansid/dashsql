@@ -7,8 +7,14 @@ import pandas as pd
 from sqlalchemy.orm import sessionmaker
 from models import Title, db_connect, create_table, Domain, Subdomain
 
-columns= [column.key for column in Title.__table__.columns]
-print(columns)
+# columns= [column.key for column in Title.__table__.columns]
+columns= ['domain_name',
+ 'subdomain_name',
+ 'title',
+ 'status',
+ 'response_len',
+ 'created_on',
+ 'updated_on']
 
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css']
 
@@ -37,16 +43,14 @@ app.layout = html.Div([
 @app.callback(Output('datatable', 'data'),
               [Input('interval-component', 'n_intervals'),])
 def update_metrics(n):
-    query = session.query(Title).order_by(Title.domain_id, Title.subdomain_id)
+    # query = session.query(Title).order_by(Title.domain_id, Title.subdomain_id)
     
-    # query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title.title,\
-    #                     Title.status, Title.response_len, Title.created_on, Title.updated_on)
-    # query = query.join(Title).join(Subdomain).join(Domain)
+    query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title.title,\
+                        Title.status, Title.response_len, Title.created_on, Title.updated_on).order_by(Domain.domain_name, Subdomain.subdomain_name)
+    query = query.join(Title).outerjoin(Subdomain)
     data = []
     for q in query:
-        title = q.__dict__
-        del title['_sa_instance_state']
-        data.append(title)
+        data.append(q._asdict())
     return data
 
 # @app.callback(Output('container', 'children'),

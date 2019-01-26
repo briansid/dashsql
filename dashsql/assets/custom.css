@@ -1,0 +1,17 @@
+/*tbody tr:not(:first-child) {
+    display: none;
+}*/
+.hidden{
+    display: none;
+    margin-left: 20px;
+}
+
+.levelOneAlert{
+	background-color: #ff0f0f;
+	color: white;
+}
+
+.levelTwoAlert{
+	background-color: #ff7a7a;
+	color: black;
+}
