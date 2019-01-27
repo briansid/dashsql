@@ -92,14 +92,54 @@ $(document).ready(function(){
 	console.log(ds)
 
 	function createToggle(domain, start, end){
-		$('tr').eq(domain).click(function(){
+		// Add + to domain rows
+		$('tr').eq(domain).append('<td>+</td>');
+		// Hide all subdomains
+		$("tr").slice(start, end).addClass('hidden');
+		// Toggle hide show/hide on click
+		$('tr').eq(domain).find('td').slice(-1).click(function(){
+
+		// Switch + to - on click
+			if ($(this).text() == '+') {
+				$(this).text('-')
+			}else{
+				$(this).text('+')
+			}
+			
+			$("tr").slice(start, end).css('background-color', 'rgb(229, 229, 229)')
 			$("tr").slice(start, end).toggleClass('hidden');
 	})};
 
+	function checkPageStatus(){
+		for (var key in ds){
+		var domainrow = $('tr').eq(ds[key][0])
+		var domainstatuscol = domainrow.find('td').eq(3)
+		$.each(ds[key], function( index, value ) {
+			console.log( index + ": " + value )
+			var subdomainrow = $('tr').eq(value)
+			var subdomainstatuscol = subdomainrow.find('td').eq(3)
+
+			var mainAlertCss = {'background-color': 'red',
+								'color': 'white'
+			};
+
+			if (domainstatuscol.text() !== '200') {
+				domainstatuscol.css(mainAlertCss)
+			}
+			if (subdomainstatuscol.text() !== '200') {
+				domainstatuscol.css('background-color', 'pink')
+				subdomainstatuscol.css(mainAlertCss)
+			}
+		})
+	}}
+
 	for (var key in ds){
+		// Hide columns if there are subdomains
 		if (ds[key].length > 1) {
 			createToggle(ds[key][0], ds[key][1], ds[key].slice(-1)[0]+1);
 		}
 	}
-}, 500);
+	setInterval(checkPageStatus, 1000);
+
+}, 1000);
 });

@@ -3,6 +3,7 @@ import getopt
 from sqlalchemy.orm import sessionmaker
 from models import Title, db_connect, create_table, Domain, Subdomain
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 
 usage = """usage: domain.py [-h] [-a domain] [-r domain_id] [-b domains.txt] [-l]
 
@@ -66,12 +67,18 @@ for opt, arg in opts:
                     line['domain_id'] = domain_id
                     sd = Subdomain(**line)
                     session.add(sd)
-                    session.commit()
                 else:
                     del line['subdomain_name']
                     d = Domain(**line)
                     session.add(d)
+                try:
                     session.commit()
+                except IntegrityError as err:
+                    print(err)
+                    session.rollback()
+                    continue
+
+
         # with open(arg) as f:
         #     urls = f.readlines()
         # urls = [url.strip() for url in urls]

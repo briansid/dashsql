@@ -20,10 +20,12 @@ class H1Spider(scrapy.Spider):
         for q in query:
             # Check interval
             try:
-                last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=None).scalar()
+                last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=None).one()[0]
             except:
                 pass
             else:
+                print('last_check')
+                print(last_check)
                 if datetime.now() < last_check+timedelta(minutes=q.monitoring_rate):
                     continue
             yield scrapy.Request('http://'+q.domain_name, meta={
@@ -34,7 +36,7 @@ class H1Spider(scrapy.Spider):
         for q in query:
             # Check interval
             try:
-                last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=q.subdomain_id).scalar()
+                last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=q.subdomain_id).one()[0]
             except:
                 pass
             else:

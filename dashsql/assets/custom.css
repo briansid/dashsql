@@ -1,9 +1,12 @@
 /*tbody tr:not(:first-child) {
     display: none;
 }*/
+/*tr{
+	display: none;
+}*/
+
 .hidden{
     display: none;
-    margin-left: 20px;
 }
 
 .levelOneAlert{

@@ -36,7 +36,7 @@ app.layout = html.Div([
             interval=1*5000, # in milliseconds
             n_intervals=0
     ),
-    html.Div(id='container', className="lert alert-danger")
+    # html.Div(id='container', className="alert alert-danger")
 ],)
 
 

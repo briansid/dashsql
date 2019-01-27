@@ -47,3 +47,4 @@ class Title(Base):
     response_len = Column(Integer())
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
+
