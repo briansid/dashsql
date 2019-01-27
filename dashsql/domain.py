@@ -5,13 +5,14 @@ from models import Title, db_connect, create_table, Domain, Subdomain
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
-usage = """usage: domain.py [-h] [-a domain] [-r domain_id] [-b domains.txt] [-l]
+usage = """usage: domain.py [-h] [-a domain] [-r domain_id] [-b domains.csv] [-l domain|subdomain] [-R domains.csv] [-g filename.csv]
 
 optional arguments:
   -h, --help Show this help message and exit
   -a, --add Add domain to parser
-  -l, --level Dommain Level
-  -r, --remove Remove domain from parsers
+  -r, --remove Remove domain 
+  -g, --get Get all domain and subdomains in a file
+  -R, --REM Bulk remove
   -b, --bulk Bulk add domains to parser
   -l, --list List all domains"""
 
@@ -22,7 +23,7 @@ if len(argv) == 0:
     sys.exit()
 
 try:
-    opts, args = getopt.getopt(argv, "a:r:b:lh", ["add=", "remove=", "list", "bulk=", "help"])
+    opts, args = getopt.getopt(argv, "a:r:b:l:R:g:h", ["add=", "remove=", "list=", "bulk=", "REM=", "get=", "help"])
 except:
     print(usage)
     sys.exit()
@@ -40,6 +41,16 @@ for opt, arg in opts:
         session.add(query)
         session.commit()
         print('%s added' % arg)
+
+    if opt in ['-g', '--get']:
+        with open(arg, 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(('domain_name', 'subdomain_name'))
+            query = session.query(Domain.domain_name, Subdomain.subdomain_name)
+            query = query.outerjoin(Subdomain)
+            for q in query:
+                writer.writerow(q)
+
     elif opt in ['-r', '--remove']:
         # Delete from Titles
         query = session.query(Title)
@@ -56,6 +67,31 @@ for opt, arg in opts:
         print('%s removed.' % query.name)
         session.delete(query)
         session.commit()
+
+    elif opt in ['-R', '--REM']:
+        with open(arg) as f:
+            reader = csv.DictReader(f)
+            for line in reader:
+                if line['subdomain_name']:
+                    try:
+                        query = session.query(Subdomain).filter_by(subdomain_name=line['subdomain_name']).one()
+                        session.delete(query)
+                        session.commit()
+                    except NoResultFound:
+                        print('%s is not found' % line['subdomain_name'])
+                        continue
+                    else:
+                        print('Subdomain %s successfully deleted' % line['subdomain_name'])
+                else:
+                    try:
+                        query = session.query(Domain).filter_by(domain_name=line['domain_name']).one()
+                        session.delete(query)
+                        session.commit()
+                    except NoResultFound:
+                        print('%s is not found' % line['domain_name'])
+                        continue
+                    else:
+                        print('Domain %s successfully deleted' % line['domain_name'])
 
     elif opt in ['-b', '--bulk']:
         with open(arg) as f:
@@ -96,8 +132,16 @@ for opt, arg in opts:
         print('Added successfully.')
 
     elif opt in ['-l', '--list']:
-        for d in session.query(Domain):
-            print('{:3} - {}'.format(d.domain_id, d.domain_name))
+        if arg.lower() in ['domain', 'domains']:
+            for d in session.query(Domain):
+                print('{:3} - {}'.format(d.domain_id, d.domain_name))
+        elif arg.lower() in ['subdomain', 'subdomains']:
+            for sd in session.query(Subdomain):
+                print('{:3} - {}'.format(sd.subdomain_id, sd.subdomain_name))
+        else:
+            print(usage)
+            sys.exit()
+
     elif opt in ['-h', '--help']:
         print(usage)
 

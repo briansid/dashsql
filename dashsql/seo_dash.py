@@ -14,7 +14,7 @@ columns= ['domain_name',
  'status',
  'response_len',
  'created_on',
- 'updated_on']
+ 'updated_on',]
 
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css']
 
