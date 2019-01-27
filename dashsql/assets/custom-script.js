@@ -75,21 +75,19 @@
 // jQuery
 $(document).ready(function(){  
 	setTimeout(function() {
-	console.log('Loaded')
 	var ds = {}
 	var rows = $('tr')
-	console.log(rows)
 
 	for (var i = 1; i < rows.length; i++){
 		var domain = rows.eq(i).find('td').eq(0).text()
 		var subdomain = rows.eq(i).find('td').eq(1).text()
 		if (subdomain == ''){
 			ds[domain] = []
-		}esle:{
+			ds[domain].push(i)
+		}else{
 			ds[domain].push(i)
 		}
 	}
-	console.log(ds)
 
 	function createToggle(domain, start, end){
 		// Add + to domain rows
@@ -115,7 +113,6 @@ $(document).ready(function(){
 		var domainrow = $('tr').eq(ds[key][0])
 		var domainstatuscol = domainrow.find('td').eq(3)
 		$.each(ds[key], function( index, value ) {
-			console.log( index + ": " + value )
 			var subdomainrow = $('tr').eq(value)
 			var subdomainstatuscol = subdomainrow.find('td').eq(3)
 
@@ -133,6 +130,77 @@ $(document).ready(function(){
 		})
 	}}
 
+	function getColumnName(index){
+		return $('tr').eq(0).find('th').eq(index).text()
+	}
+
+	function makeInfo(){
+		for (var key in ds){
+			var problems = []
+			var domainrow = $('tr').eq(ds[key][0])
+			var domaincols = $(domainrow).find('td')
+			$.each(domaincols, function( colindex, col ) {
+				var colcolor = $(col).css("background-color")
+					if (colcolor == "rgb(255, 0, 0)"){
+						var colname = getColumnName(colindex)
+						var coltex = $(col).text()
+						var problem = {
+							'level': 'domain',
+							'name': colname,
+							'problem': coltex,
+						}
+						problems.push(problem)
+						// $(domaincols).eq(7).append(JSON.stringify(problem))
+					}
+				})
+			if (ds[key].length > 1){
+			$.each(ds[key], function( index, value ) {
+				var subdomainrow = $('tr').eq(value)
+				var subdomaincols = $('tr').eq(value).find('td')
+				$.each(subdomaincols, function( colindex, col ) {
+					var colcolor = $(col).css("background-color")
+					if (colcolor == "rgb(255, 0, 0)"){
+						var colname = getColumnName(colindex)
+						var coltex = $(col).text()
+						var problem = {
+							'level': 'subdomain',
+							'name': colname,
+							'problem': coltex,
+						}
+						problems.push(problem)
+						// $(domaincols).eq(7).append(JSON.stringify(problem))
+					}
+			})
+
+
+		})}
+		if (problems.length){
+			var domainProblem = false
+			var infocol = $(domaincols).eq(7)
+			console.log(problems)
+			for (var problem in problems){
+				console.log(problem)
+				if (problem['level'] == 'domain')
+					domainProblem = true
+					break;
+			}
+			console.log(domainProblem)
+			infocol.text('')
+			infocol.append(JSON.stringify(problems))
+			if (domainProblem){
+				var mainAlertCss = {'background-color': 'red',
+									'color': 'white'}
+				infocol.css(mainAlertCss)
+			}else{
+				infocol.css('background-color', 'pink');
+			}
+		}
+
+		}
+	}
+
+
+
 	for (var key in ds){
 		// Hide columns if there are subdomains
 		if (ds[key].length > 1) {
@@ -140,6 +208,8 @@ $(document).ready(function(){
 		}
 	}
 	setInterval(checkPageStatus, 1000);
+	// makeInfo()
+	setInterval(makeInfo, 1000);
 
 }, 1000);
 });
