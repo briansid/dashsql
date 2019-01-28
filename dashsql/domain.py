@@ -90,6 +90,7 @@ for opt, arg in opts:
                 else:
                     try:
                         query = session.query(Domain).filter_by(domain_name=line['domain_name']).one()
+                        domain_id = query.domain_id
                         session.delete(query)
                         session.commit()
                     except NoResultFound:
@@ -97,6 +98,14 @@ for opt, arg in opts:
                         continue
                     else:
                         print('Domain %s successfully deleted' % line['domain_name'])
+                    try:
+                        # Remove all the subdomains belong to this domain
+                        query = session.query(Subdomain).filter_by(domain_id=domain_id)
+                        for q in query:
+                            session.delete(q)
+                            session.commit()
+                    except NoResultFound:
+                        pass
 
     elif opt in ['-b', '--bulk']:
         with open(arg) as f:
