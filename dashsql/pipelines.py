@@ -19,7 +19,7 @@ class DashsqlPipeline(object):
     def process_item(self, item, spider):
         session = self.Session()
         q = session.query(Title).filter_by(domain_id=item['domain_id'], subdomain_id=item['subdomain_id'])
-        if q:
+        if q.first():
             # Copy to archive
             qdict = q.first().__dict__
             del qdict['_sa_instance_state']

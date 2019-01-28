@@ -10,7 +10,7 @@ usage = """usage: domain.py [-h] [-a domain] [-r domain_id] [-b domains.csv] [-l
 optional arguments:
   -h, --help Show this help message and exit
   -a, --add Add domain to parser
-  -r, --remove Remove domain 
+  -r, --remove Remove domain
   -g, --get Get all domain and subdomains in a file
   -R, --REM Bulk remove
   -b, --bulk Bulk add domains to parser
@@ -47,9 +47,14 @@ for opt, arg in opts:
             writer = csv.writer(f)
             writer.writerow(('domain_name', 'subdomain_name'))
             query = session.query(Domain.domain_name, Subdomain.subdomain_name)
-            query = query.outerjoin(Subdomain)
+            query = query.join(Subdomain)
             for q in query:
                 writer.writerow(q)
+
+            query = session.query(Domain.domain_name)
+            for q in query:
+                row = (q.domain_name, None)
+                writer.writerow(row)
 
     elif opt in ['-r', '--remove']:
         # Delete from Titles
@@ -103,16 +108,28 @@ for opt, arg in opts:
                     line['domain_id'] = domain_id
                     sd = Subdomain(**line)
                     session.add(sd)
+
+                    try:
+                        session.commit()
+                        print('Subdomain %s added successfully' % line['subdomain_name'])
+                    # Domain/Subdomain already exist
+                    except IntegrityError as err:
+                        session.rollback()
+                        continue
+
                 else:
                     del line['subdomain_name']
                     d = Domain(**line)
                     session.add(d)
-                try:
-                    session.commit()
-                except IntegrityError as err:
-                    print(err)
-                    session.rollback()
-                    continue
+
+                    try:
+                        session.commit()
+                        print('Domain %s added successfully' % line['domain_name'])
+                    # Domain/Subdomain already exist
+                    except IntegrityError as err:
+                        session.rollback()
+                        continue
+
 
 
         # with open(arg) as f:
@@ -129,7 +146,6 @@ for opt, arg in opts:
         # session.flush()
         # session.commit()
 
-        print('Added successfully.')
 
     elif opt in ['-l', '--list']:
         if arg.lower() in ['domain', 'domains']:
