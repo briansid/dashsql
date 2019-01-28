@@ -9,8 +9,6 @@ from models import Title, db_connect, create_table, Domain, Subdomain
 
 # columns= [column.key for column in Title.__table__.columns]
 columns= [
-
-
     'domain_name',
     'subdomain_name',
     'title',
@@ -19,7 +17,6 @@ columns= [
     'created_on',
     'updated_on',
     # 'info',
-
 ]
 
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css']
