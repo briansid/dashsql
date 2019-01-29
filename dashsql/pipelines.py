@@ -18,26 +18,27 @@ class DashsqlPipeline(object):
 
     def process_item(self, item, spider):
         session = self.Session()
-        q = session.query(Title).filter_by(domain_id=item['domain_id'], subdomain_id=item['subdomain_id'])
-        if q.first():
-            # Copy to archive
-            qdict = q.first().__dict__
-            del qdict['_sa_instance_state']
-            del qdict['title_id']
-            print(qdict)
-            a = Archive(**qdict)
-            session.add(a)
+        query = session.query(Title).filter_by(domain_id=item['domain_id'], subdomain_id=item['subdomain_id'])
+        q = query.first()
+        if q:
+            qcopy = q.__dict__.copy()
+            changes = False
+            for key, value in item.items():
+                if qcopy[key] != value:
+                    changes = True
+                    break
+                # Update column even if no changes
+                # else:
+                #     q.updated_on = datetime.now()
 
-            # Delete row from title
-            q.delete()
-
-            # Add new row
-            title = Title(**item)
-            session.add(title)
-            session.commit()
-        else:
-            title = Title(**item)
-            session.add(title)
-            session.commit()
+            if changes:
+                # Copy old row to archive
+                del qcopy['_sa_instance_state']
+                a = Archive(**qcopy)
+                session.add(a)
+                # Update current row
+                query.update(item)
+                # Commit
+                session.commit()
 
         return item

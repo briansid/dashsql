@@ -51,6 +51,8 @@ class Title(Base):
 class Archive(Base):
     __tablename__ = "archive"
     archive_id = Column(Integer(), primary_key=True)
+    title_id = Column(Integer(), ForeignKey('titles.title_id'))
+    # Do we need domain_id and suubdomain_id if we have title_id?
     domain_id = Column(Integer, ForeignKey('domains.domain_id'))
     subdomain_id = Column(Integer, ForeignKey('subdomains.subdomain_id'))
     title = Column(String(255))
