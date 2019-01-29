@@ -26,6 +26,7 @@ class Domain(Base):
     project_name = Column(String(2))
     version = Column(String(7))
     monitoring_rate = Column(Integer())
+    created_on = Column(DateTime(), default=datetime.now)
 
 class Subdomain(Base):
     __tablename__ = "subdomains"
@@ -35,6 +36,7 @@ class Subdomain(Base):
     project_name = Column(String(2))
     version = Column(String(7))
     monitoring_rate = Column(Integer())
+    created_on = Column(DateTime(), default=datetime.now)
 
 
 class Title(Base):
@@ -45,7 +47,6 @@ class Title(Base):
     title = Column(String(255))
     status = Column(Integer())
     response_len = Column(Integer())
-    created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
 
 class Archive(Base):
@@ -58,5 +59,4 @@ class Archive(Base):
     title = Column(String(255))
     status = Column(Integer())
     response_len = Column(Integer())
-    created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)

@@ -40,5 +40,9 @@ class DashsqlPipeline(object):
                 query.update(item)
                 # Commit
                 session.commit()
+        else:
+            t = Title(**item)
+            session.add(t)
+            session.commit()
 
         return item
