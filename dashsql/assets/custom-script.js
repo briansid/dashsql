@@ -16,6 +16,7 @@ $(document).ready(function(){
 		return ind;
 	}
 
+
 	for (var i = 1; i < rows.length; i++){
 		var domain = rows.eq(i).find('td').eq(indexOfColumnByName('domain_name')).text()
 		var subdomain = rows.eq(i).find('td').eq(indexOfColumnByName('subdomain_name')).text()
@@ -45,6 +46,26 @@ $(document).ready(function(){
 			$("tr").slice(start, end).css('background-color', 'rgb(229, 229, 229)')
 			$("tr").slice(start, end).toggleClass('hidden');
 	})};
+
+	for (var key in ds){
+			// Hide columns if there are subdomains
+			if (ds[key].length > 1) {
+				createToggle(ds[key][0], ds[key][1], ds[key].slice(-1)[0]+1);
+		}
+	}
+
+	function addLinksToTitleId(i){
+			var titleidcol = rows.eq(i).find('td').eq(indexOfColumnByName('title_id'))
+			console.log(titleidcol.text())
+			var link = "/archive/title_id=" + titleidcol.text()
+			$(titleidcol).click(function(){
+				window.open(link,'_blank')
+			});
+	}
+
+	for (var i = 1; i < rows.length; i++){
+		addLinksToTitleId(i)
+	}
 
 	function checkPageStatus(){
 		for (var key in ds){
@@ -80,12 +101,7 @@ $(document).ready(function(){
 		return $('tr').eq(0).find('th').eq(index).text()
 	}
 
-	for (var key in ds){
-		// Hide columns if there are subdomains
-		if (ds[key].length > 1) {
-			createToggle(ds[key][0], ds[key][1], ds[key].slice(-1)[0]+1);
-		}
-	}
+
 	setInterval(checkPageStatus, 1000);
 	// makeInfo()
 	// setInterval(makeInfo, 1000);
