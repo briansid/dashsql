@@ -14,7 +14,6 @@ columns= [
     'title',
     'status',
     'response_len',
-    'created_on',
     'updated_on',
     # 'info',
 ]
@@ -49,7 +48,7 @@ def update_metrics(n):
     # query = session.query(Title).order_by(Title.domain_id, Title.subdomain_id)
 
     query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title.title,\
-                        Title.status, Title.response_len, Title.created_on, Title.updated_on).order_by(Domain.domain_name, Subdomain.subdomain_name)
+                        Title.status, Title.response_len, Title.updated_on).order_by(Domain.domain_name, Subdomain.subdomain_name)
     query = query.join(Title).outerjoin(Subdomain)
     data = []
     for q in query:

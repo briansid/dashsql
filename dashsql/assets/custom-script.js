@@ -83,6 +83,26 @@ $(document).ready(function(){
 
 
 
+// #jquery imitate link click
+// $("#google_link_proxy").click(function(event){
+//     window.open($("#google_link").attr('href'),'_blank')
+// });
+
+// $(goo).click(function(event){
+//     window.open("htttp://google.com",'_blank')
+// });
+
+// $(goo).click(function(event){
+//     window.open("/page1",'_blank')
+// });
+
+
+// // jquery create link
+// var thelink = $('<a>',{
+//     text: 'linktext',
+//     title: 'some title',
+//     href: 'somelink.html'
+// }).appendTo('body');
 
 
 	// function makeInfo(){
