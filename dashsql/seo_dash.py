@@ -9,6 +9,7 @@ from models import Title, db_connect, create_table, Domain, Subdomain
 
 # columns= [column.key for column in Title.__table__.columns]
 columns= [
+    'title_id',
     'domain_name',
     'subdomain_name',
     'title',
@@ -47,7 +48,7 @@ app.layout = html.Div([
 def update_metrics(n):
     # query = session.query(Title).order_by(Title.domain_id, Title.subdomain_id)
 
-    query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title.title,\
+    query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title.title_id, Title.title,\
                         Title.status, Title.response_len, Title.updated_on).order_by(Domain.domain_name, Subdomain.subdomain_name)
     query = query.join(Title).outerjoin(Subdomain)
     data = []

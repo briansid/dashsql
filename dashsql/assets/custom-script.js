@@ -4,9 +4,21 @@ $(document).ready(function(){
 	var ds = {}
 	var rows = $('tr')
 
+	function indexOfColumnByName(name){
+		var columns = $('tr').eq(0).find('th')
+		var ind = ''
+		$.each(columns, function( index, value ) {
+			if (value.textContent === name) {
+				ind = index
+
+			}
+		})
+		return ind;
+	}
+
 	for (var i = 1; i < rows.length; i++){
-		var domain = rows.eq(i).find('td').eq(0).text()
-		var subdomain = rows.eq(i).find('td').eq(1).text()
+		var domain = rows.eq(i).find('td').eq(indexOfColumnByName('domain_name')).text()
+		var subdomain = rows.eq(i).find('td').eq(indexOfColumnByName('subdomain_name')).text()
 		if (subdomain == ''){
 			ds[domain] = []
 			ds[domain].push(i)
@@ -37,10 +49,10 @@ $(document).ready(function(){
 	function checkPageStatus(){
 		for (var key in ds){
 		var domainrow = $('tr').eq(ds[key][0])
-		var domainstatuscol = domainrow.find('td').eq(3)
+		var domainstatuscol = domainrow.find('td').eq(indexOfColumnByName('status'))
 		$.each(ds[key], function( index, value ) {
 			var subdomainrow = $('tr').eq(value)
-			var subdomainstatuscol = subdomainrow.find('td').eq(3)
+			var subdomainstatuscol = subdomainrow.find('td').eq(indexOfColumnByName('status'))
 
 			var mainAlertCss = {'background-color': 'red',
 								'color': 'white'
