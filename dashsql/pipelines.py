@@ -34,6 +34,8 @@ class DashsqlPipeline(object):
             if changes:
                 # Copy old row to archive
                 del qcopy['_sa_instance_state']
+                # del qcopy['domain_id']
+                # del qcopy['subdomain_id']
                 a = Archive(**qcopy)
                 session.add(a)
                 # Update current row

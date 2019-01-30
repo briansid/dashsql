@@ -1,23 +1,10 @@
-import dash, random, datetime
+import dash, random, datetime, re
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_table
-import pandas as pd
 from sqlalchemy.orm import sessionmaker
-from models import Title, db_connect, create_table, Domain, Subdomain
-
-# columns= [column.key for column in Title.__table__.columns]
-columns= [
-    'title_id',
-    'domain_name',
-    'subdomain_name',
-    'title',
-    'status',
-    'response_len',
-    'updated_on',
-    # 'info',
-]
+from models import Title, db_connect, create_table, Domain, Subdomain, Archive
 
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css']
 
@@ -29,7 +16,25 @@ session = Session()
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.scripts.append_script({"external_url": "https://code.jquery.com/jquery-3.3.1.js"})
 
+app.config.suppress_callback_exceptions = True
+
 app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+columns = [
+    'title_id',
+    'domain_name',
+    'subdomain_name',
+    'title',
+    'status',
+    'response_len',
+    'updated_on',
+    # 'info',
+]
+
+index_page = html.Div([
     dash_table.DataTable(
         id='datatable',
         columns=[{"name": i, "id": i} for i in columns],
@@ -48,13 +53,73 @@ app.layout = html.Div([
 def update_metrics(n):
     # query = session.query(Title).order_by(Title.domain_id, Title.subdomain_id)
 
-    query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title.title_id, Title.title,\
-                        Title.status, Title.response_len, Title.updated_on).order_by(Domain.domain_name, Subdomain.subdomain_name)
+    query = session.query(
+        Domain.domain_name,
+        Subdomain.subdomain_name,
+        Title.title_id,
+        Title.title,
+        Title.status,
+        Title.response_len,
+        Title.updated_on
+    )
+
     query = query.join(Title).outerjoin(Subdomain)
+
+    query = query.order_by(
+        Domain.domain_name,
+        Subdomain.subdomain_name
+    )
+
     data = []
     for q in query:
         data.append(q._asdict())
     return data
+
+
+# columns = [column.key for column in Archive.__table__.columns]
+
+
+archive_page = html.Div([
+    dash_table.DataTable(
+        id='archivetable',
+        columns=[{"name": i, "id": i} for i in columns],
+        data=[],),
+],)
+
+
+@app.callback(Output('archivetable', 'data'),
+              [Input('url', 'pathname')])
+def update_data(pathname):
+    title_id = int(re.search(r'title_id=(.*)', pathname).group(1))
+
+    query = session.query(
+        Domain.domain_name,
+        Subdomain.subdomain_name,
+        Archive.title_id,
+        Archive.title,
+        Archive.status,
+        Archive.response_len,
+        Archive.updated_on
+    )
+
+    query = query.join(Archive).outerjoin(Subdomain)
+    query = query.filter(Archive.title_id == title_id)
+
+    data = []
+    for q in query:
+        data.append(q._asdict())
+
+    return data
+
+
+@app.callback(dash.dependencies.Output('page-content', 'children'),
+              [dash.dependencies.Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname and pathname.startswith('/archive'):
+        return archive_page
+    else:
+        return index_page
+
 
 # @app.callback(Output('container', 'children'),
 #               [Input('datatable', 'data')])
