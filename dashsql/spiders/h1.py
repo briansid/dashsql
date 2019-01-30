@@ -51,8 +51,8 @@ class H1Spider(scrapy.Spider):
         i = DashsqlItem()
         i['domain_id'] = response.meta['domain_id']
         i['subdomain_id'] = response.meta['subdomain_id']
-        i['title'] = response.css('title::text').get()
+        # i['title'] = response.css('title::text').get()
         i['status'] = response.status
         i['response_len'] = len(response.text)
-        
+
         yield i

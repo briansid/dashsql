@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import os
@@ -32,7 +32,7 @@ class Subdomain(Base):
     __tablename__ = "subdomains"
     subdomain_id = Column(Integer(), primary_key=True)
     subdomain_name = Column(String(255), unique=True)
-    domain_id = Column(Integer, ForeignKey('domains.domain_id'))
+    domain_id = Column(Integer(), ForeignKey('domains.domain_id'))
     project_name = Column(String(2))
     version = Column(String(7))
     monitoring_rate = Column(Integer())
@@ -44,10 +44,27 @@ class Title(Base):
     title_id = Column(Integer(), primary_key=True)
     domain_id = Column(Integer, ForeignKey('domains.domain_id'))
     subdomain_id = Column(Integer, ForeignKey('subdomains.subdomain_id'))
-    title = Column(String(255))
+    # title = Column(String(255))
     status = Column(Integer())
     response_len = Column(Integer())
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
+    traffic = Column('Traffic', Integer())
+    fd = Column('FD', Integer())
+    pkh = Column('PKH', String())
+    uptime = Column('UPTime', Integer())
+    speed_test = Column('Speed Test', Integer())
+    serp_desktop = Column('SERP Desktop', Integer())
+    serp_mobile = Column('SERP Mobile', Integer())
+    links = Column('Links', Integer())
+    content = Column('Content', String())
+    robots = Column('Robots', String())
+    y_alert = Column('Y.Alert', String())
+    g_alert = Column('G.Alert', String())
+    exp_date = Column('Exp. Date', Date())
+    pages = Column('Pages', Integer())
+    y_index = Column('Y.Index', Integer())
+    g_index = Column('G.Index', Integer())
+
 
 class Archive(Base):
     __tablename__ = "archive"
@@ -56,7 +73,23 @@ class Archive(Base):
     # Do we need domain_id and suubdomain_id if we have title_id?
     # domain_id = Column(Integer, ForeignKey('domains.domain_id'))
     # subdomain_id = Column(Integer, ForeignKey('subdomains.subdomain_id'))
-    title = Column(String(255))
+    # title = Column(String(255))
     status = Column(Integer())
     response_len = Column(Integer())
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
+    traffic = Column('Traffic', Integer())
+    fd = Column('FD', Integer())
+    pkh = Column('PKH', String())
+    uptime = Column('UPTime', Integer())
+    speed_test = Column('Speed Test', Integer())
+    serp_desktop = Column('SERP Desktop', Integer())
+    serp_mobile = Column('SERP Mobile', Integer())
+    links = Column('Links', Integer())
+    content = Column('Content', String())
+    robots = Column('Robots', String())
+    y_alert = Column('Y.Alert', String())
+    g_alert = Column('G.Alert', String())
+    exp_date = Column('Exp. Date', Date())
+    pages = Column('Pages', Integer())
+    y_index = Column('Y.Index', Integer())
+    g_index = Column('G.Index', Integer())

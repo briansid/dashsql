@@ -1,7 +1,7 @@
 import sys, csv
 import getopt
 from sqlalchemy.orm import sessionmaker
-from models import Title, db_connect, create_table, Domain, Subdomain
+from models import db_connect, create_table, Domain, Subdomain, Title, Archive
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 

@@ -23,16 +23,21 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
-columns = [
-    'title_id',
-    'domain_name',
-    'subdomain_name',
-    'title',
-    'status',
-    'response_len',
-    'updated_on',
-    # 'info',
-]
+columns = ['domain_name', 'subdomain_name']
+columns += [column.key for column in Title.__table__.columns]
+columns.remove('domain_id')
+columns.remove('subdomain_id')
+
+# columns = [
+#     'title_id',
+#     'domain_name',
+#     'subdomain_name',
+#     'title',
+#     'status',
+#     'response_len',
+#     'updated_on',
+#     # 'info',
+# ]
 
 index_page = html.Div([
     dash_table.DataTable(
@@ -57,7 +62,7 @@ def update_metrics(n):
         Domain.domain_name,
         Subdomain.subdomain_name,
         Title.title_id,
-        Title.title,
+        # Title.title,
         Title.status,
         Title.response_len,
         Title.updated_on
@@ -110,7 +115,7 @@ def update_data(pathname):
         Domain.domain_name,
         Subdomain.subdomain_name,
         Archive.title_id,
-        Archive.title,
+        # Archive.title,
         Archive.status,
         Archive.response_len,
         Archive.updated_on
