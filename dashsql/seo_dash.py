@@ -92,6 +92,20 @@ archive_page = html.Div([
 def update_data(pathname):
     title_id = int(re.search(r'title_id=(.*)', pathname).group(1))
 
+    # query = session.query(
+    #     Domain.domain_name,
+    #     Subdomain.subdomain_name,
+    #     Archive.title_id,
+    #     Archive.title,
+    #     Archive.status,
+    #     Archive.response_len,
+    #     Archive.updated_on
+    # )
+
+    # query = query.join(Archive).outerjoin(Subdomain)
+
+
+    # Works without  domain_id and subdomain_id in archive table
     query = session.query(
         Domain.domain_name,
         Subdomain.subdomain_name,
@@ -102,7 +116,7 @@ def update_data(pathname):
         Archive.updated_on
     )
 
-    query = query.join(Archive).outerjoin(Subdomain)
+    query = query.join(Title).outerjoin(Subdomain).join(Archive)
     query = query.filter(Archive.title_id == title_id)
 
     data = []
