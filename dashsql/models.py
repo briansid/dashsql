@@ -1,9 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-import os
 from sqlalchemy.pool import SingletonThreadPool
-from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 

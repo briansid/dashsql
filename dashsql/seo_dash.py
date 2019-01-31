@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output
 import dash_table
 from sqlalchemy.orm import sessionmaker
 from models import Title, db_connect, create_table, Domain, Subdomain, Archive
+from sqlalchemy import desc
 
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css']
 
@@ -28,16 +29,6 @@ columns += [column.key for column in Title.__table__.columns]
 columns.remove('domain_id')
 columns.remove('subdomain_id')
 
-# columns = [
-#     'title_id',
-#     'domain_name',
-#     'subdomain_name',
-#     'title',
-#     'status',
-#     'response_len',
-#     'updated_on',
-#     # 'info',
-# ]
 
 index_page = html.Div([
     dash_table.DataTable(
@@ -49,25 +40,12 @@ index_page = html.Div([
             interval=1*5000, # in milliseconds
             n_intervals=0
     ),
-    # html.Div(id='container', className="alert alert-danger")
 ],)
 
 
 @app.callback(Output('datatable', 'data'),
-              [Input('interval-component', 'n_intervals'),])
+              [Input('interval-component', 'n_intervals')])
 def update_metrics(n):
-    # query = session.query(Title).order_by(Title.domain_id, Title.subdomain_id)
-
-    # query = session.query(
-    #     Domain.domain_name,
-    #     Subdomain.subdomain_name,
-    #     Title.title_id,
-    #     # Title.title,
-    #     Title.status,
-    #     Title.response_len,
-    #     Title.updated_on
-    # )
-
     query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title)
 
     query = query.join(Title).outerjoin(Subdomain)
@@ -85,11 +63,17 @@ def update_metrics(n):
         del qdict['_sa_instance_state']
         del qdict['domain_id']
         del qdict['subdomain_id']
+
+        previous_data = session.query(Archive).filter_by(title_id=qdict['title_id'])\
+                        .order_by(desc(Archive.updated_on)).first()
+
+        if qdict['traffic'] < previous_data.traffic:
+            qdict['traffic'] = str(qdict['traffic']) + ' ▼'
+        elif qdict['traffic'] > previous_data.traffic:
+            qdict['traffic'] = str(qdict['traffic']) + ' ▲'
+
         data.append(qdict)
     return data
-
-
-# columns = [column.key for column in Archive.__table__.columns]
 
 
 archive_page = html.Div([
@@ -105,20 +89,6 @@ archive_page = html.Div([
 def update_data(pathname):
     title_id = int(re.search(r'title_id=(.*)', pathname).group(1))
 
-    # query = session.query(
-    #     Domain.domain_name,
-    #     Subdomain.subdomain_name,
-    #     Archive.title_id,
-    #     Archive.title,
-    #     Archive.status,
-    #     Archive.response_len,
-    #     Archive.updated_on
-    # )
-
-    # query = query.join(Archive).outerjoin(Subdomain)
-
-
-    # Works without  domain_id and subdomain_id in archive table
     query = session.query(
         Domain.domain_name,
         Subdomain.subdomain_name,
