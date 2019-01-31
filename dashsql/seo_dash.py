@@ -1,4 +1,4 @@
-import dash, random, datetime, re
+import dash, re
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
@@ -58,15 +58,17 @@ index_page = html.Div([
 def update_metrics(n):
     # query = session.query(Title).order_by(Title.domain_id, Title.subdomain_id)
 
-    query = session.query(
-        Domain.domain_name,
-        Subdomain.subdomain_name,
-        Title.title_id,
-        # Title.title,
-        Title.status,
-        Title.response_len,
-        Title.updated_on
-    )
+    # query = session.query(
+    #     Domain.domain_name,
+    #     Subdomain.subdomain_name,
+    #     Title.title_id,
+    #     # Title.title,
+    #     Title.status,
+    #     Title.response_len,
+    #     Title.updated_on
+    # )
+
+    query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title)
 
     query = query.join(Title).outerjoin(Subdomain)
 
@@ -77,7 +79,13 @@ def update_metrics(n):
 
     data = []
     for q in query:
-        data.append(q._asdict())
+        qdict = q.Title.__dict__
+        qdict['domain_name'] = q.domain_name
+        qdict['subdomain_name'] = q.subdomain_name
+        del qdict['_sa_instance_state']
+        del qdict['domain_id']
+        del qdict['subdomain_id']
+        data.append(qdict)
     return data
 
 
@@ -114,11 +122,7 @@ def update_data(pathname):
     query = session.query(
         Domain.domain_name,
         Subdomain.subdomain_name,
-        Archive.title_id,
-        # Archive.title,
-        Archive.status,
-        Archive.response_len,
-        Archive.updated_on
+        Archive
     )
 
     query = query.join(Title).outerjoin(Subdomain).join(Archive)
@@ -126,8 +130,11 @@ def update_data(pathname):
 
     data = []
     for q in query:
-        data.append(q._asdict())
-
+        qdict = q.Archive.__dict__
+        qdict['domain_name'] = q.domain_name
+        qdict['subdomain_name'] = q.subdomain_name
+        del qdict['_sa_instance_state']
+        data.append(qdict)
     return data
 
 

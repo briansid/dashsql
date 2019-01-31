@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import scrapy
-from datetime import datetime, timedelta
+import scrapy, random
+from datetime import datetime, timedelta, date
 from dashsql.items import DashsqlItem
 from sqlalchemy.orm import sessionmaker
 from dashsql.models import Title, db_connect, create_table, Domain, Subdomain
@@ -54,5 +54,21 @@ class H1Spider(scrapy.Spider):
         # i['title'] = response.css('title::text').get()
         i['status'] = response.status
         i['response_len'] = len(response.text)
+        i['traffic'] = random.choice([i for i in range(0,11000, 1000)])
+        i['fd'] = random.choice([i for i in range(0,110,10)])
+        i['pkh'] = random.choice(['ok', 'site', '192.168.0.1', 'site 192.168.0.1'])
+        i['uptime'] = random.choice([0, 200])
+        i['speed_test'] = random.choice([1, 2, 3, 4])
+        i['serp_desktop'] = random.randint(0,250)
+        i['serp_mobile'] = random.randint(0,250)
+        i['links'] = random.randint(0,60)
+        i['content'] = random.choice(['ok', 'change'])
+        i['robots'] = random.choice(['ok', 'change'])
+        i['y_alert'] = random.choice(['ok', 'change'])
+        i['g_alert'] = random.choice(['ok', 'change'])
+        i['exp_date'] = date(2021, 5, 2)
+        i['pages'] = random.randint(0,500)
+        i['y_index'] = random.randint(0,500)
+        i['g_index'] = random.randint(0,500)
 
         yield i
