@@ -88,12 +88,18 @@ archive_page = html.Div([
         id='archivetable',
         columns=[{"name": i, "id": i} for i in columns],
         data=[],),
+    dcc.Interval(
+            id='interval-component',
+            interval=1*5000, # in milliseconds
+            n_intervals=0
+    )
 ],)
 
 
 @app.callback(Output('archivetable', 'data'),
-              [Input('url', 'pathname')])
-def update_data(pathname):
+              [Input('url', 'pathname'),
+              Input('interval-component', 'n_intervals')])
+def update_data(pathname, n):
     title_id = int(re.search(r'title_id=(.*)', pathname).group(1))
 
     query = session.query(
