@@ -58,28 +58,32 @@ def update_metrics(n):
 
     data = []
     for q in query:
-        qdict = q.Title.__dict__
-        qdict['domain_name'] = q.domain_name
-        qdict['subdomain_name'] = q.subdomain_name
-        del qdict['_sa_instance_state']
-        del qdict['domain_id']
-        del qdict['subdomain_id']
+        current_data = q.Title.__dict__
+        current_data['domain_name'] = q.domain_name
+        current_data['subdomain_name'] = q.subdomain_name
+        del current_data['_sa_instance_state']
+        del current_data['domain_id']
+        del current_data['subdomain_id']
 
-        previous_data = session.query(Archive).filter_by(title_id=qdict['title_id'])\
+        previous_data = session.query(Archive).filter_by(title_id=current_data['title_id'])\
                         .order_by(desc(Archive.updated_on)).first()
         previous_data = previous_data.__dict__
 
         def add_arrow(param):
-            if qdict[param] < previous_data[param]:
-                qdict[param] = str(qdict[param]) + ' ▼'
-            elif qdict[param] > previous_data[param]:
-                qdict[param] = str(qdict[param]) + ' ▲'
+            if current_data[param] < previous_data[param]:
+                # Значение  сильно отличаетя от предыдущего.
+                if current_data[param]/previous_data[param] < 0.5:
+                    current_data[param] = str(current_data[param]) + ' ▼▼'
+                else:
+                    current_data[param] = str(current_data[param]) + ' ▼'
+            elif current_data[param] > previous_data[param]:
+                current_data[param] = str(current_data[param]) + ' ▲'
 
 
         add_arrow('traffic')
         add_arrow('fd')
 
-        data.append(qdict)
+        data.append(current_data)
     return data
 
 
@@ -113,11 +117,11 @@ def update_data(pathname, n):
 
     data = []
     for q in query:
-        qdict = q.Archive.__dict__
-        qdict['domain_name'] = q.domain_name
-        qdict['subdomain_name'] = q.subdomain_name
-        del qdict['_sa_instance_state']
-        data.append(qdict)
+        archive_data = q.Archive.__dict__
+        archive_data['domain_name'] = q.domain_name
+        archive_data['subdomain_name'] = q.subdomain_name
+        del archive_data['_sa_instance_state']
+        data.append(archive_data)
     return data
 
 
