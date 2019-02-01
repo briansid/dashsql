@@ -43,6 +43,7 @@ index_page = html.Div([
 ],)
 
 
+
 @app.callback(Output('datatable', 'data'),
               [Input('interval-component', 'n_intervals')])
 def update_metrics(n):
@@ -66,11 +67,17 @@ def update_metrics(n):
 
         previous_data = session.query(Archive).filter_by(title_id=qdict['title_id'])\
                         .order_by(desc(Archive.updated_on)).first()
+        previous_data = previous_data.__dict__
 
-        if qdict['traffic'] < previous_data.traffic:
-            qdict['traffic'] = str(qdict['traffic']) + ' ▼'
-        elif qdict['traffic'] > previous_data.traffic:
-            qdict['traffic'] = str(qdict['traffic']) + ' ▲'
+        def add_arrow(param):
+            if qdict[param] < previous_data[param]:
+                qdict[param] = str(qdict[param]) + ' ▼'
+            elif qdict[param] > previous_data[param]:
+                qdict[param] = str(qdict[param]) + ' ▲'
+
+
+        add_arrow('traffic')
+        add_arrow('fd')
 
         data.append(qdict)
     return data
