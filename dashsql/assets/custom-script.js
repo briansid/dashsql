@@ -28,6 +28,7 @@ $(document).ready(function(){
 		}
 	}
 
+
 	function createToggle(domain, start, end){
 		// Add + to domain rows
 		$('tr').eq(domain).append('<td>+</td>');
@@ -56,7 +57,6 @@ $(document).ready(function(){
 
 	function addLinksToTitleId(i){
 			var titleidcol = rows.eq(i).find('td').eq(indexOfColumnByName('title_id'))
-			console.log(titleidcol.text())
 			var link = "/archive/title_id=" + titleidcol.text()
 			$(titleidcol).click(function(){
 				window.open(link,'_blank')
@@ -67,42 +67,99 @@ $(document).ready(function(){
 		addLinksToTitleId(i)
 	}
 
-	function checkPageStatus(){
+
+	function addAlerts(){
+		var mainAlertCss = {'background-color': 'red',
+							'color': 'white'};
+
+		var subdomainAlertCss = {'background-color': 'pink',
+								'color': 'black'};
+
 		for (var key in ds){
-		var domainrow = $('tr').eq(ds[key][0])
-		var domainstatuscol = domainrow.find('td').eq(indexOfColumnByName('status'))
-		$.each(ds[key], function( index, value ) {
-			var subdomainrow = $('tr').eq(value)
-			var subdomainstatuscol = subdomainrow.find('td').eq(indexOfColumnByName('status'))
+		var domaincols = $('tr').eq(ds[key][0]).find('td')
+		domaincols.removeAttr('style')
+		var domain_status = domaincols.eq(indexOfColumnByName('status'))
+		var domain_traffic = domaincols.eq(indexOfColumnByName('traffic'))
+		var domain_fd = domaincols.eq(indexOfColumnByName('fd'))
+		var domain_pkh = domaincols.eq(indexOfColumnByName('pkh'))
 
-			var mainAlertCss = {'background-color': 'red',
-								'color': 'white'
-			};
+		if (domain_status.text() !== '200') {
+			domain_status.css(mainAlertCss)
+		}
+		if (domain_traffic.text().indexOf('▼▼') > -1){
+			domain_traffic.css(mainAlertCss)
+		}
+		if (domain_fd.text().indexOf('▼▼') > -1){
+			domain_fd.css(mainAlertCss)
+		}
+		if (domain_pkh.text() !== 'ok'){
+			domain_pkh.css(mainAlertCss)
+		}
 
-			var subdomainAlertCss = {'background-color': 'pink',
-									'color': 'black'}
+		$.each(ds[key].slice(1,), function( index, value ) {
+			var subdomaincols = $('tr').eq(value).find('td')
+			subdomaincols.removeAttr('style')
+			subdomaincols.css('background-color', 'rgb(229, 229, 229)')
+			var subdomain_status = subdomaincols.eq(indexOfColumnByName('status'))
+			var subdomain_traffic = subdomaincols.eq(indexOfColumnByName('traffic'))
+			var subdomain_fd = subdomaincols.eq(indexOfColumnByName('fd'))
+			var subdomain_pkh = subdomaincols.eq(indexOfColumnByName('pkh'))
 
 
-			if (domainstatuscol.text() !== '200') {
-				domainstatuscol.css(mainAlertCss)
+			// STATUS ALERT
+			if (subdomain_status.text() !== '200') {
+				domain_status.css(subdomainAlertCss)
+				subdomain_status.css(mainAlertCss)
 			}
-			else if (subdomainstatuscol.text() !== '200') {
-				domainstatuscol.css(subdomainAlertCss)
-				subdomainstatuscol.css(mainAlertCss)
+			if (domain_status.text() !== '200') {
+				domain_status.css(mainAlertCss)
 			}
-			else{
-				domainstatuscol.removeAttr("style")
-				subdomainstatuscol.removeAttr("style")
+
+			// TRAFFIC DROP ALERT
+			if (subdomain_traffic.text().indexOf('▼▼') > -1) {
+				domain_traffic.css(subdomainAlertCss)
+				subdomain_traffic.css(mainAlertCss)
 			}
+			if (domain_traffic.text().indexOf('▼▼') > -1){
+				domain_traffic.css(mainAlertCss)
+			}
+
+			// FD DROP ALERT
+			if (subdomain_fd.text().indexOf('▼▼') > -1){
+				domain_fd.css(subdomainAlertCss)
+				subdomain_fd.css(mainAlertCss)
+			}
+			if (domain_fd.text().indexOf('▼▼') > -1){
+				domain_fd.css(mainAlertCss)
+			}
+
+			// PKH alert
+			if (subdomain_pkh.text() !== 'ok'){
+				domain_pkh.css(subdomainAlertCss)
+				subdomain_pkh.css(mainAlertCss)
+			}
+			if (domain_pkh.text() !== 'ok'){
+				domain_pkh.css(mainAlertCss)
+			}
+
+
+			// REPLACE TWO ARROWS WITH ONE ARROW DOESNT WORK
+			// subdomain_traffic.text(subdomain_traffic.text().replace('▼▼', '▼'))
+			// subdomain_fd.text(subdomain_fd.text().replace('▼▼', '▼'))
+
 		})
+		// domain_traffic.text(domain_traffic.text().replace('▼▼', '▼'))
+		// domain_fd.text(domain_fd.text().replace('▼▼', '▼'))
 	}}
+
+
 
 	function getColumnName(index){
 		return $('tr').eq(0).find('th').eq(index).text()
 	}
 
 
-	setInterval(checkPageStatus, 1000);
+	setInterval(addAlerts, 100);
 	// makeInfo()
 	// setInterval(makeInfo, 1000);
 

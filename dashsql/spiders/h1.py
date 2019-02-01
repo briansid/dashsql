@@ -19,15 +19,15 @@ class H1Spider(scrapy.Spider):
         query = session.query(Domain)
         for q in query:
             # Check interval
-            try:
-                last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=None).one()[0]
-            except:
-                pass
-            else:
-                print('last_check')
-                print(last_check)
-                if datetime.now() < last_check+timedelta(minutes=q.monitoring_rate):
-                    continue
+            # try:
+            #     last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=None).one()[0]
+            # except:
+            #     pass
+            # else:
+            #     print('last_check')
+            #     print(last_check)
+            #     if datetime.now() < last_check+timedelta(minutes=q.monitoring_rate):
+            #         continue
             yield scrapy.Request('http://'+q.domain_name, meta={
                 'domain_id': q.domain_id,
                 'subdomain_id': None
@@ -35,40 +35,40 @@ class H1Spider(scrapy.Spider):
         query = session.query(Subdomain)
         for q in query:
             # Check interval
-            try:
-                last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=q.subdomain_id).one()[0]
-            except:
-                pass
-            else:
-                if datetime.now() < last_check+timedelta(minutes=q.monitoring_rate):
-                    continue
+            # try:
+            #     last_check = session.query(Title.updated_on).filter_by(domain_id=q.domain_id, subdomain_id=q.subdomain_id).one()[0]
+            # except:
+            #     pass
+            # else:
+            #     if datetime.now() < last_check+timedelta(minutes=q.monitoring_rate):
+            #         continue
             yield scrapy.Request('http://'+q.subdomain_name, meta={
                     'domain_id': q.domain_id,
                     'subdomain_id': q.subdomain_id,
                 })
 
     def parse(self, response):
-        i = DashsqlItem()
-        i['domain_id'] = response.meta['domain_id']
-        i['subdomain_id'] = response.meta['subdomain_id']
-        # i['title'] = response.css('title::text').get()
-        i['status'] = response.status
-        i['response_len'] = len(response.text)
-        i['traffic'] = random.choice([i for i in range(0,11000, 1000)])
-        i['fd'] = random.choice([i for i in range(0,110,10)])
-        i['pkh'] = random.choice(['ok', 'site', '192.168.0.1', 'site 192.168.0.1'])
-        i['uptime'] = random.choice([0, 200])
-        i['speed_test'] = random.choice([1, 2, 3, 4])
-        i['serp_desktop'] = random.randint(0,250)
-        i['serp_mobile'] = random.randint(0,250)
-        i['links'] = random.randint(0,60)
-        i['content'] = random.choice(['ok', 'change'])
-        i['robots'] = random.choice(['ok', 'change'])
-        i['y_alert'] = random.choice(['ok', 'change'])
-        i['g_alert'] = random.choice(['ok', 'change'])
-        i['exp_date'] = date(2021, 5, 2)
-        i['pages'] = random.randint(0,500)
-        i['y_index'] = random.randint(0,500)
-        i['g_index'] = random.randint(0,500)
+        item = DashsqlItem()
+        item['domain_id'] = response.meta['domain_id']
+        item['subdomain_id'] = response.meta['subdomain_id']
+        # item['title'] = response.css('title::text').get()
+        item['status'] = response.status
+        item['response_len'] = len(response.text)
+        item['traffic'] = random.choice([i for i in range(0,11000, 1000)])
+        item['fd'] = random.choice([i for i in range(0,110,10)])
+        item['pkh'] = random.choice(['ok', 'site'])
+        item['uptime'] = random.choice([0, 200])
+        item['speed_test'] = random.choice([1, 2, 3, 4])
+        item['serp_desktop'] = random.randint(0,250)
+        item['serp_mobile'] = random.randint(0,250)
+        item['links'] = random.randint(0,60)
+        item['content'] = random.choice(['ok', 'change'])
+        item['robots'] = random.choice(['ok', 'change'])
+        item['y_alert'] = random.choice(['ok', 'change'])
+        item['g_alert'] = random.choice(['ok', 'change'])
+        item['exp_date'] = date(2021, 5, 2)
+        item['pages'] = random.randint(0,500)
+        item['y_index'] = random.randint(0,500)
+        item['g_index'] = random.randint(0,500)
 
-        yield i
+        yield item
