@@ -55,6 +55,9 @@ class H1Spider(scrapy.Spider):
         item['status'] = response.status
         item['response_len'] = len(response.text)
         item['traffic'] = random.choice([i for i in range(0,11000, 1000)])
+        item['traffic_google'] = random.choice([i for i in range(0,11000, 1000)])
+        item['traffic_yandex'] = random.choice([i for i in range(0,11000, 1000)])
+        item['traffic_simmilarweb'] = random.choice([i for i in range(0,11000, 1000)])
         item['fd'] = random.choice([i for i in range(0,110,10)])
         item['pkh'] = random.choice(['ok', 'site'])
         item['uptime'] = random.choice([0, 200])

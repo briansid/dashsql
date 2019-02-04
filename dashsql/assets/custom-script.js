@@ -28,6 +28,12 @@ $(document).ready(function(){
 		}
 	}
 
+	// Hide Traffic columns
+	var traffic_cols = $('table tr td:nth-child(n+8):nth-child(-n+10), table tr th:nth-child(n+8):nth-child(-n+10)')
+	traffic_cols.addClass('hidden')
+	$('table tr td:nth-child(7), table tr th:nth-child(7)').click(function(){
+		traffic_cols.toggleClass('hidden');
+	})
 
 	function createToggle(domain, start, end){
 		// Add + to domain rows
@@ -48,6 +54,7 @@ $(document).ready(function(){
 			$("tr").slice(start, end).toggleClass('hidden');
 	})};
 
+
 	for (var key in ds){
 			// Hide columns if there are subdomains
 			if (ds[key].length > 1) {
@@ -66,6 +73,8 @@ $(document).ready(function(){
 	for (var i = 1; i < rows.length; i++){
 		addLinksToTitleId(i)
 	}
+
+
 
 
 	function addAlerts(){

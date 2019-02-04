@@ -33,6 +33,9 @@ def fix_columns(ld):
         'pages': 'Pages',
         'y_index': 'Y.Index',
         'g_index': 'G.Index',
+        'traffic_google': 'Traffic Google',
+        'traffic_yandex': 'Traffic Yandex',
+        'traffic_simmilarweb': 'Traffic SimmilarWEB',
     }
     for d in ld:
         for key in d:

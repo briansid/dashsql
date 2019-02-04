@@ -30,4 +30,7 @@ class DashsqlItem(scrapy.Item):
     pages = scrapy.Field()
     y_index = scrapy.Field()
     g_index = scrapy.Field()
+    traffic_google = scrapy.Field()
+    traffic_yandex = scrapy.Field()
+    traffic_simmilarweb = scrapy.Field()
     # pass
