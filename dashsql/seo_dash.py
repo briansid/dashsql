@@ -19,7 +19,7 @@ def fix_columns(ld):
     column_names = {
         'traffic': 'Traffic',
         'fd': 'FD',
-        'pkh': 'РКН',
+        'pkh': 'PKH',
         'uptime': 'UPTime',
         'speed_test': 'Speed Test',
         'serp_desktop': 'SERP Desktop',

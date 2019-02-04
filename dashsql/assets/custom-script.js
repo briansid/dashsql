@@ -158,7 +158,7 @@ $(document).ready(function(){
 		return $('tr').eq(0).find('th').eq(index).text()
 	}
 
-
+	// addAlerts();
 	setInterval(addAlerts, 100);
 	// makeInfo()
 	// setInterval(makeInfo, 1000);
