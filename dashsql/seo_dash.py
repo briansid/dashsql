@@ -14,6 +14,33 @@ create_table(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+
+def fix_columns(ld):
+    column_names = {
+        'traffic': 'Traffic',
+        'fd': 'FD',
+        'pkh': 'РКН',
+        'uptime': 'UPTime',
+        'speed_test': 'Speed Test',
+        'serp_desktop': 'SERP Desktop',
+        'serp_mobile': 'SERP Mobile',
+        'links': 'Links',
+        'content': 'Content',
+        'robots': 'Robots',
+        'y_alert': 'Y.Alert',
+        'g_alert': 'G.Alert',
+        'exp_date': 'Exp. Date',
+        'pages': 'Pages',
+        'y_index': 'Y.Index',
+        'g_index': 'G.Index',
+    }
+    for d in ld:
+        for key in d:
+            if key in column_names:
+                d[column_names[key]] = d.pop(key)
+    return ld
+
+
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.scripts.append_script({"external_url": "https://code.jquery.com/jquery-3.3.1.js"})
 
@@ -32,7 +59,7 @@ columns.remove('subdomain_id')
 
 index_page = html.Div([
     dash_table.DataTable(
-        id='datatable',
+        id='dashboard',
         columns=[{"name": i, "id": i} for i in columns],
         data=[],),
     dcc.Interval(
@@ -43,8 +70,7 @@ index_page = html.Div([
 ],)
 
 
-
-@app.callback(Output('datatable', 'data'),
+@app.callback(Output('dashboard', 'data'),
               [Input('interval-component', 'n_intervals')])
 def update_metrics(n):
     query = session.query(Domain.domain_name, Subdomain.subdomain_name, Title)
@@ -67,7 +93,10 @@ def update_metrics(n):
 
         previous_data = session.query(Archive).filter_by(title_id=current_data['title_id'])\
                         .order_by(desc(Archive.updated_on)).first()
-        previous_data = previous_data.__dict__
+        if previous_data:
+            previous_data = previous_data.__dict__
+        else:
+            previous_data = current_data
 
         def add_arrow(param):
             if current_data[param] < previous_data[param]:
@@ -79,12 +108,11 @@ def update_metrics(n):
             elif current_data[param] > previous_data[param]:
                 current_data[param] = str(current_data[param]) + ' ▲'
 
-
         add_arrow('traffic')
         add_arrow('fd')
 
         data.append(current_data)
-    return data
+    return fix_columns(data)
 
 
 archive_page = html.Div([
@@ -111,7 +139,7 @@ def update_data(pathname, n):
         Subdomain.subdomain_name,
         Archive
     )
-
+    # TODO: Error if there is no data in arhive?
     query = query.join(Title).outerjoin(Subdomain).join(Archive)
     query = query.filter(Archive.title_id == title_id)
 
@@ -122,7 +150,7 @@ def update_data(pathname, n):
         archive_data['subdomain_name'] = q.subdomain_name
         del archive_data['_sa_instance_state']
         data.append(archive_data)
-    return data
+    return fix_columns(data)
 
 
 @app.callback(dash.dependencies.Output('page-content', 'children'),

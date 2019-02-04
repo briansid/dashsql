@@ -79,9 +79,9 @@ $(document).ready(function(){
 		var domaincols = $('tr').eq(ds[key][0]).find('td')
 		domaincols.removeAttr('style')
 		var domain_status = domaincols.eq(indexOfColumnByName('status'))
-		var domain_traffic = domaincols.eq(indexOfColumnByName('traffic'))
-		var domain_fd = domaincols.eq(indexOfColumnByName('fd'))
-		var domain_pkh = domaincols.eq(indexOfColumnByName('pkh'))
+		var domain_traffic = domaincols.eq(indexOfColumnByName('Traffic'))
+		var domain_fd = domaincols.eq(indexOfColumnByName('FD'))
+		var domain_pkh = domaincols.eq(indexOfColumnByName('PKH'))
 
 		if (domain_status.text() !== '200') {
 			domain_status.css(mainAlertCss)
@@ -92,7 +92,7 @@ $(document).ready(function(){
 		if (domain_fd.text().indexOf('▼▼') > -1){
 			domain_fd.css(mainAlertCss)
 		}
-		if (domain_pkh.text() !== 'ok'){
+		if (domain_pkh.text() !== 'ok' && domain_pkh.text() !== ""){
 			domain_pkh.css(mainAlertCss)
 		}
 
@@ -101,9 +101,9 @@ $(document).ready(function(){
 			subdomaincols.removeAttr('style')
 			subdomaincols.css('background-color', 'rgb(229, 229, 229)')
 			var subdomain_status = subdomaincols.eq(indexOfColumnByName('status'))
-			var subdomain_traffic = subdomaincols.eq(indexOfColumnByName('traffic'))
-			var subdomain_fd = subdomaincols.eq(indexOfColumnByName('fd'))
-			var subdomain_pkh = subdomaincols.eq(indexOfColumnByName('pkh'))
+			var subdomain_traffic = subdomaincols.eq(indexOfColumnByName('Traffic'))
+			var subdomain_fd = subdomaincols.eq(indexOfColumnByName('FD'))
+			var subdomain_pkh = subdomaincols.eq(indexOfColumnByName('PKH'))
 
 
 			// STATUS ALERT
@@ -134,11 +134,11 @@ $(document).ready(function(){
 			}
 
 			// PKH alert
-			if (subdomain_pkh.text() !== 'ok'){
+			if (subdomain_pkh.text() !== 'ok' && subdomain_pkh.text() !== ""){
 				domain_pkh.css(subdomainAlertCss)
 				subdomain_pkh.css(mainAlertCss)
 			}
-			if (domain_pkh.text() !== 'ok'){
+			if (domain_pkh.text() !== 'ok' && domain_pkh.text() !== ""){
 				domain_pkh.css(mainAlertCss)
 			}
 
